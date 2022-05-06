@@ -11,32 +11,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-interface Cancellable {
-    fun cancel()
-}
-
-fun <T> Flow<T>.collect(onEach: (T) -> Unit, onCompletion: (cause: Throwable?) -> Unit): Cancellable {
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-
-    scope.launch {
-        try {
-            collect {
-                onEach(it)
-            }
-
-            onCompletion(null)
-        } catch (e: Throwable) {
-            onCompletion(e)
-        }
-    }
-
-    return object : Cancellable {
-        override fun cancel() {
-            scope.cancel()
-        }
-    }
-}
-
 fun <T> Flow<T>.wrap(): CFlow<T> = CFlow(this)
 
 class CFlow<T>(private val origin: Flow<T>) : Flow<T> by origin {
