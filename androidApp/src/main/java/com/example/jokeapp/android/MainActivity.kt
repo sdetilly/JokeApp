@@ -1,63 +1,82 @@
 package com.example.jokeapp.android
 
+import android.content.Intent
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Button
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.jokeapp.MainViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import com.example.jokeapp.viewModel.MainNavigationDelegate
+import com.example.jokeapp.android.base.BaseActivity
+import com.example.jokeapp.viewModel.MainViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity<MainViewModel>(), MainNavigationDelegate {
 
-    lateinit var viewModel: MainViewModel
+    override val viewModelFromServiceLocator = serviceLocator.mainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = App.instance.serviceLocator.mainViewModel
-
+        viewModel.navigationDelegate = this
         setContent {
             Joke(textFlow = viewModel.jokeLabel)
         }
     }
 
+    override fun goToSearchPage() {
+        startActivity(Intent(this, SearchJokeActivity::class.java))
+    }
+
     @Composable
     fun Joke(textFlow: Flow<String>) {
-        val text: String by textFlow.collectAsState("initial")
-        Column(modifier = Modifier
+        val text: String by textFlow.collectAsState("")
+        Scaffold(
+            topBar = { TopAppBar { Text(text = "Joke App", color = Color.White) } },
+            floatingActionButton = { Fab() },
+            content = { paddingValues ->  Content(paddingValues, text) }
+        )
+    }
+
+    @Composable
+    fun Fab() = FloatingActionButton(onClick = { viewModel.searchClicked() },
+        content = { Icon(Icons.Filled.Search, "") })
+
+    @Composable
+    fun Content(paddingValues: PaddingValues, text:String) = Column(
+        modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center) {
-            Text(
-                text= text,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.wrapContentWidth()
-            )
-            Button(onClick = { viewModel.getJoke() }) {
-                Text(text = "Refresh")
-            }
+            .fillMaxWidth()
+            .padding(paddingValues),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center) {
+        Text(
+            text= text,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.wrapContentWidth()
+        )
+        Button(onClick = { viewModel.getJoke() }) {
+            Text(text = "Refresh")
         }
     }
 

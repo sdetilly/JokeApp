@@ -1,5 +1,8 @@
-package com.example.jokeapp
+package com.example.jokeapp.viewModel
 
+import com.example.jokeapp.CFlow
+import com.example.jokeapp.JokeApi
+import com.example.jokeapp.wrap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -15,5 +18,9 @@ class MainViewModelImpl(private val jokeApi: JokeApi) : MainViewModel() {
         viewModelScope.launch {
             _jokeLabel.value = jokeApi.getJoke().joke
         }
+    }
+
+    override fun searchClicked() {
+        navigationDelegate?.goToSearchPage()
     }
 }

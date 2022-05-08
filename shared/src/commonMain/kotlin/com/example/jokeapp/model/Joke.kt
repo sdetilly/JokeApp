@@ -1,10 +1,9 @@
-package com.example.jokeapp
+package com.example.jokeapp.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Joke(
     val id: String,
-    val joke: String,
-    val status: Int
+    val joke: String
 )
