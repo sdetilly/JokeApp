@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.flowOf
 
 class MainActivity : BaseActivity<MainViewModel>(), MainNavigationDelegate {
 
-    override val viewModelFromServiceLocator = serviceLocator.mainViewModel
+    override val viewModelFromServiceLocator = serviceLocator.createMainViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

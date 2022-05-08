@@ -11,10 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +34,7 @@ import com.example.jokeapp.viewModel.SearchJokeViewModel
 import kotlinx.coroutines.flow.Flow
 
 class SearchJokeActivity : BaseActivity<SearchJokeViewModel>() {
-    override val viewModelFromServiceLocator = serviceLocator.searchJokeViewModel
+    override val viewModelFromServiceLocator = serviceLocator.createSearchJokeViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,9 +49,14 @@ class SearchJokeActivity : BaseActivity<SearchJokeViewModel>() {
         var text by rememberSaveable { mutableStateOf("") }
         Scaffold(
             topBar = {
-                TopAppBar {
-                    Text(text = "Search Joke", color = Color.White)
-                }
+                TopAppBar(
+                    title = { Text("Search Joke", color = Color.White) },
+                    navigationIcon = {
+                        IconButton(onClick = { onBackPressed() }) {
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                )
             }
         ) { paddingValues ->
             Column(modifier = Modifier

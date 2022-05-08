@@ -6,7 +6,7 @@ import com.example.jokeapp.viewModel.SearchJokeViewModelImpl
 class ServiceLocatorImpl : ServiceLocator {
     private val jokeApi = JokeApi()
 
-    override val mainViewModel = MainViewModelImpl(jokeApi)
+    override fun createMainViewModel() = MainViewModelImpl(jokeApi)
 
-    override val searchJokeViewModel = SearchJokeViewModelImpl(jokeApi)
+    override fun createSearchJokeViewModel() = SearchJokeViewModelImpl(jokeApi)
 }
